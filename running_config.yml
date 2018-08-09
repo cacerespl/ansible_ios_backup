@@ -1,0 +1,27 @@
+---
+- hosts: switch
+  gather_facts: no
+  connection: local
+  vars_files:
+    - variables1.yml
+  tasks:
+    - name: Provider
+      set_fact:
+        provider:
+          host: "{{ inventory_hostname }}"
+          username: "{{ username }}"
+          password: "{{ password }}"
+          port: "{{ port_number }}"
+
+    - name: Get running config
+      ios_command:
+        provider: "{{ provider  }}"
+        commands:
+        - show run
+      register: running_config
+
+    - name: Save the running config to a file
+      copy:
+        content: "{{ running_config.stdout[0] }}"
+        dest: "/home/user/{{ hostname }}.txt" 
+
